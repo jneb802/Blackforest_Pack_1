@@ -14,11 +14,12 @@ namespace Blackforest_Pack_1
         private static void Prefix(ZNetPeer peer, ref ZNet __instance)
         {
             // Register version check call
-            Blackforest_Pack_1Plugin.Blackforest_Pack_1Logger.LogDebug("Registering version RPC handler");
-            peer.m_rpc.Register($"{Blackforest_Pack_1Plugin.ModName}_VersionCheck", new Action<ZRpc, ZPackage>(RpcHandlers.RPC_Blackforest_Pack_1_Version));
+            WarpLogger.Logger.LogDebug("Registering version RPC handler");
+            peer.m_rpc.Register($"{Blackforest_Pack_1Plugin.ModName}_VersionCheck",
+                new Action<ZRpc, ZPackage>(RpcHandlers.RPC_Blackforest_Pack_1_Version));
 
             // Make calls to check versions
-            Blackforest_Pack_1Plugin.Blackforest_Pack_1Logger.LogDebug("Invoking version check");
+            WarpLogger.Logger.LogDebug("Invoking version check");
             ZPackage zpackage = new();
             zpackage.Write(Blackforest_Pack_1Plugin.ModVersion);
             peer.m_rpc.Invoke($"{Blackforest_Pack_1Plugin.ModName}_VersionCheck", zpackage);
@@ -32,14 +33,16 @@ namespace Blackforest_Pack_1
         {
             if (!__instance.IsServer() || RpcHandlers.ValidatedPeers.Contains(rpc)) return true;
             // Disconnect peer if they didn't send mod version at all
-            Blackforest_Pack_1Plugin.Blackforest_Pack_1Logger.LogWarning($"Peer ({rpc.m_socket.GetHostName()}) never sent version or couldn't due to previous disconnect, disconnecting");
+            WarpLogger.Logger.LogWarning(
+                $"Peer ({rpc.m_socket.GetHostName()}) never sent version or couldn't due to previous disconnect, disconnecting");
             rpc.Invoke("Error", 3);
             return false; // Prevent calling underlying method
         }
 
         private static void Postfix(ZNet __instance)
         {
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(), $"{Blackforest_Pack_1Plugin.ModName}RequestAdminSync",
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(),
+                $"{Blackforest_Pack_1Plugin.ModName}RequestAdminSync",
                 new ZPackage());
         }
     }
@@ -65,7 +68,8 @@ namespace Blackforest_Pack_1
         {
             if (!__instance.IsServer()) return;
             // Remove peer from validated list
-            Blackforest_Pack_1Plugin.Blackforest_Pack_1Logger.LogInfo($"Peer ({peer.m_rpc.m_socket.GetHostName()}) disconnected, removing from validated list");
+            WarpLogger.Logger.LogInfo(
+                $"Peer ({peer.m_rpc.m_socket.GetHostName()}) disconnected, removing from validated list");
             _ = RpcHandlers.ValidatedPeers.Remove(peer.m_rpc);
         }
     }
@@ -78,15 +82,17 @@ namespace Blackforest_Pack_1
         {
             string? version = pkg.ReadString();
 
-            Blackforest_Pack_1Plugin.Blackforest_Pack_1Logger.LogInfo("Version check, local: " +
-                                                                              Blackforest_Pack_1Plugin.ModVersion +
-                                                                              ",  remote: " + version);
+            WarpLogger.Logger.LogInfo("Version check, local: " +
+                                      Blackforest_Pack_1Plugin.ModVersion +
+                                      ",  remote: " + version);
             if (version != Blackforest_Pack_1Plugin.ModVersion)
             {
-                Blackforest_Pack_1Plugin.ConnectionError = $"{Blackforest_Pack_1Plugin.ModName} Installed: {Blackforest_Pack_1Plugin.ModVersion}\n Needed: {version}";
+                Blackforest_Pack_1Plugin.ConnectionError =
+                    $"{Blackforest_Pack_1Plugin.ModName} Installed: {Blackforest_Pack_1Plugin.ModVersion}\n Needed: {version}";
                 if (!ZNet.instance.IsServer()) return;
                 // Different versions - force disconnect client from server
-                Blackforest_Pack_1Plugin.Blackforest_Pack_1Logger.LogWarning($"Peer ({rpc.m_socket.GetHostName()}) has incompatible version, disconnecting...");
+                WarpLogger.Logger.LogWarning(
+                    $"Peer ({rpc.m_socket.GetHostName()}) has incompatible version, disconnecting...");
                 rpc.Invoke("Error", 3);
             }
             else
@@ -94,13 +100,13 @@ namespace Blackforest_Pack_1
                 if (!ZNet.instance.IsServer())
                 {
                     // Enable mod on client if versions match
-                    Blackforest_Pack_1Plugin.Blackforest_Pack_1Logger.LogInfo(
+                    WarpLogger.Logger.LogInfo(
                         "Received same version from server!");
                 }
                 else
                 {
                     // Add client to validated list
-                    Blackforest_Pack_1Plugin.Blackforest_Pack_1Logger.LogInfo(
+                    WarpLogger.Logger.LogInfo(
                         $"Adding peer ({rpc.m_socket.GetHostName()}) to validated list");
                     ValidatedPeers.Add(rpc);
                 }

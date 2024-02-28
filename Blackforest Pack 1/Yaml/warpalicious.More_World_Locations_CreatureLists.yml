@@ -1,14 +1,28 @@
-MeadowsCreatures1:
+BlackforestCreatures1:
   - Skeleton
   - Skeleton
   - Skeleton
   - Skeleton
   - Skeleton_Poison
-MeadowsCreatures2:
+BlackforestCreatures2:
   - Greydwarf
   - Greydwarf
   - Greydwarf
+  - Greydwarf_Elite
   - Greydwarf
+  - Greydwarf
+  - Greydwarf_Shaman
+BlackforestCreatures3:
+  - Greydwarf
+  - Greydwarf
+  - Greydwarf_Elite
+  - Greydwarf_Elite
+  - Greydwarf
+  - Greydwarf
+  - Greydwarf_Shaman
+  - Greydwarf
+  - Greydwarf
+  - Greydwarf_Elite
   - Greydwarf_Elite
   - Greydwarf
   - Greydwarf
